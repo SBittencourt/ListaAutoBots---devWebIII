@@ -33,7 +33,7 @@ public class AutomanagerApplication {
 			calendario.set(2002, 05, 15);
 
 			Cliente cliente = new Cliente();
-			cliente.setNome("Testinho");
+			cliente.setNome("aaaaaaaaaaa");
 			cliente.setDataCadastro(Calendar.getInstance().getTime());
 			cliente.setDataNascimento(calendario.getTime());
 			cliente.setNomeSocial("Dom Pedro");
