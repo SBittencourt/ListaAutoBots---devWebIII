@@ -8,6 +8,7 @@ public class ClienteAtualizador {
 	private DocumentoAtualizador documentoAtualizador = new DocumentoAtualizador();
 	private TelefoneAtualizador telefoneAtualizador = new TelefoneAtualizador();
 
+
 	private void atualizarDados(Cliente cliente, Cliente atualizacao) {
 		if (!verificador.verificar(atualizacao.getNome())) {
 			cliente.setNome(atualizacao.getNome());
