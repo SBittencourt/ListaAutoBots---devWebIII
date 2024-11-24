@@ -1,20 +1,19 @@
 package com.autobots.automanager.modelo;
 
-import com.autobots.automanager.entidades.Telefone;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
+import com.autobots.automanager.entidades.Telefone;
 
 @Component
 public class TelefoneSelecionador {
-
-        public Telefone selecionar(Telefone[] telefones, long id) {
-            Telefone telefone = null;
-            for (Telefone t : telefones) {
-                if (t.getId() == id) {
-                    telefone = t;
-                    break;
-                }
-            }
-            return telefone;
-        }
+	public Telefone selecionar(List<Telefone> telefones, long id) {
+		for (Telefone telefone : telefones) {
+			if (telefone.getId() == id) {
+				return telefone;
+			}
+		}
+		return null;
+	}
 }

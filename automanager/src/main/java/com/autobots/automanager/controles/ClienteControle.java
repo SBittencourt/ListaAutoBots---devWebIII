@@ -22,6 +22,7 @@ import com.autobots.automanager.repositorios.ClienteRepositorio;
 public class ClienteControle {
 	@Autowired
 	private ClienteRepositorio repositorio;
+	
 	@Autowired
 	private ClienteSelecionador selecionador;
 
@@ -50,9 +51,9 @@ public class ClienteControle {
 		repositorio.save(cliente);
 	}
 
-	@DeleteMapping("/excluir/{id}")
-	public void excluirCliente(@PathVariable Long id) {
-		Cliente cliente = repositorio.getById(id);
+	@DeleteMapping("/excluir")
+	public void excluirCliente(@RequestBody Cliente exclusao) {
+		Cliente cliente = repositorio.getById(exclusao.getId());
 		repositorio.delete(cliente);
 	}
 }
