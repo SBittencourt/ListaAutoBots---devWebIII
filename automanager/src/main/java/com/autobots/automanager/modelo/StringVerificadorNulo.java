@@ -3,11 +3,12 @@ package com.autobots.automanager.modelo;
 public class StringVerificadorNulo {
 
 	public boolean verificar(String dado) {
-		if (dado != null) {
+		boolean nulo = true;
+		if (!(dado == null)) {
 			if (!dado.isBlank()) {
-				return false;
+				nulo = false;
 			}
 		}
-		return true;
+		return nulo;
 	}
 }

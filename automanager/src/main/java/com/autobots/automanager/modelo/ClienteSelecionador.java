@@ -9,11 +9,12 @@ import com.autobots.automanager.entidades.Cliente;
 @Component
 public class ClienteSelecionador {
 	public Cliente selecionar(List<Cliente> clientes, long id) {
+		Cliente selecionado = null;
 		for (Cliente cliente : clientes) {
 			if (cliente.getId() == id) {
-				return cliente;
+				selecionado = cliente;
 			}
 		}
-		return null;
+		return selecionado;
 	}
 }

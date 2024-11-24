@@ -5,52 +5,46 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Telefone;
 import com.autobots.automanager.modelo.TelefoneAtualizador;
-import com.autobots.automanager.modelo.TelefoneSelecionador;
 import com.autobots.automanager.repositorios.TelefoneRepositorio;
 
 @RestController
-@RequestMapping("/telefone")
 public class TelefoneControle {
-	@Autowired
-	private TelefoneRepositorio repositorio;
 	
 	@Autowired
-	private TelefoneSelecionador selecionador;
+	public TelefoneRepositorio repositorio;
 	
-	@GetMapping("/telefone/{id}")
-	public Telefone obterTelefone(@PathVariable long id) {
-		return selecionador.selecionar(repositorio.findAll(), id);
-	}
-
-	@GetMapping("/telefones")
-	public List<Telefone> obterTelefones() {
-		return repositorio.findAll();
-	}
-	
-	@PostMapping("/cadastro")
+	// cadastrar telefone
+	@PostMapping("/cadastro/telefone")
 	public void cadastrarTelefone(@RequestBody Telefone telefone) {
 		repositorio.save(telefone);
 	}
-
-	@PutMapping("/atualizar")
-	public void atualizarTelefone(@RequestBody Telefone atualizacao) {
-		Telefone telefone = repositorio.getById(atualizacao.getId());
-		TelefoneAtualizador atualizador = new TelefoneAtualizador();
-		atualizador.atualizar(telefone, atualizacao);
-		repositorio.save(telefone);
+	
+	// listar telefones
+	@GetMapping("/telefone")
+	public List<Telefone> listar(){
+		return repositorio.findAll();
 	}
-
-	@DeleteMapping("/excluir")
-	public void excluirTelefone(@RequestBody Telefone exclusao) {
+	
+	// atualizar telefone
+	@PutMapping("/atualizar/telefone")
+	public void atualizarTelefone(@RequestBody Telefone t) {
+		Telefone telefone = repositorio.getById(t.getId());
+		TelefoneAtualizador atualizador = new TelefoneAtualizador();
+		atualizador.atualizar(telefone, t);
+		repositorio.save(t);
+	}
+	
+	// excluir telefone
+	@DeleteMapping("/excluir/telefone")
+	public void excluirCliente(@RequestBody Telefone exclusao) {
 		Telefone telefone = repositorio.getById(exclusao.getId());
 		repositorio.delete(telefone);
 	}
