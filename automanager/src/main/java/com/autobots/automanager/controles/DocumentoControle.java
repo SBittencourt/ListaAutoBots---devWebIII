@@ -1,86 +1,89 @@
 package com.autobots.automanager.controles;
 
-import java.util.List;
-
-import com.autobots.automanager.modelo.AdicionadorLinkDocumento;
-import com.autobots.automanager.modelo.ClienteAtualizador;
+import com.autobots.automanager.entidades.Documento;
+import com.autobots.automanager.entidades.Usuario;
+import com.autobots.automanager.modelo.adicionadorLink.AdicionadorLinkDocumento;
+import com.autobots.automanager.modelo.adicionadorLink.AdicionadorLinkUsuario;
+import com.autobots.automanager.modelo.atualizadores.DocumentoAtualizador;
+import com.autobots.automanager.repositorios.DocumentoRepositorio;
+import com.autobots.automanager.repositorios.UsuarioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.autobots.automanager.entidades.Cliente;
-import com.autobots.automanager.entidades.Documento;
-import com.autobots.automanager.modelo.DocumentoAtualizador;
-import com.autobots.automanager.repositorios.DocumentoRepositorio;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.print.Doc;
+import java.util.List;
 
 @RestController
+@RequestMapping("/documento")
 public class DocumentoControle {
 	
 	@Autowired
-	private DocumentoRepositorio repositorio;
-
+	public DocumentoRepositorio repositorio;
+	
 	@Autowired
-	private AdicionadorLinkDocumento adicionadorLink;
+	public AdicionadorLinkDocumento adicionadorLink;
 	
-	// cadastro documento
-	@PostMapping("/cadastro/documento")
-	public ResponseEntity<?> cadastrarDocumento(@RequestBody Documento documento) {
-		HttpStatus status = HttpStatus.CONFLICT;
-		if (documento.getId() == null) {
-			repositorio.save(documento);
-			status = HttpStatus.CREATED;
-		}
-		return new ResponseEntity<>(status);
+	@Autowired
+	public UsuarioRepositorio usuarioRepositorio;
+	
+	@Autowired
+	private AdicionadorLinkUsuario adicionadorLinkUsuario;
+	
+	@PostMapping("/cadastro/usuario/{idUsuario}")
+	public ResponseEntity<Documento> cadastrarDocumentoUsuario(@RequestBody Documento documento, @PathVariable Long idUsuario) {
+		Usuario usuario = usuarioRepositorio.findById(idUsuario).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+		usuario.getDocumentos().add(documento);
+		Documento documentoSalvo = repositorio.save(documento);
+		usuarioRepositorio.save(usuario);
+		return new ResponseEntity<>(documentoSalvo, HttpStatus.CREATED);
 	}
 	
-	// listagem dos documentos
-	@GetMapping("/documento")
-	public ResponseEntity<List<Documento>> obterDocumento() {
+	@GetMapping("/{id}")
+	public ResponseEntity<Documento> obterDocumento(@PathVariable Long id) {
+		Documento documento = repositorio.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        adicionadorLink.adicionarLink(documento);
+        return new ResponseEntity<>(documento, HttpStatus.OK);
+	}
+	
+	@GetMapping
+	public List<Documento> obterDocumentos(){
 		List<Documento> documentos = repositorio.findAll();
-		if (documentos.isEmpty()) {
-			ResponseEntity<List<Documento>> resposta = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			return resposta;
-		} else {
-			adicionadorLink.adicionarLink(documentos);
-			ResponseEntity<List<Documento>> resposta = new ResponseEntity<>(documentos, HttpStatus.FOUND);
-			return resposta;
-		}
+		adicionadorLink.adicionarLink(documentos);
+		return documentos;
 	}
 	
-	// atualizar documentos
-	@PutMapping("/atualizar/documento")
-	public ResponseEntity<?> atualizarDocumento(@RequestBody Documento atualizacao) {
-		HttpStatus status = HttpStatus.CONFLICT;
-		Documento documento = repositorio.getById(atualizacao.getId());
-		if (documento != null) {
-			DocumentoAtualizador atualizador = new DocumentoAtualizador();
-			atualizador.atualizar(documento, atualizacao);
-			repositorio.save(documento);
-			status = HttpStatus.OK;
-		} else {
-			status = HttpStatus.BAD_REQUEST;
-		}
-		return new ResponseEntity<>(status);
+	@PutMapping("/atualizar/{idUsuario}")
+		public ResponseEntity<Documento> atualizarDocumento(@RequestBody Documento doc, @PathVariable Long idUsuario) {
+		Usuario usuario = usuarioRepositorio.findById(idUsuario)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario not found"));
+		
+		Documento documentoExistente = usuario.getDocumentos().stream()
+				.findFirst()
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Documento not found"));
+		
+		DocumentoAtualizador atualizador = new DocumentoAtualizador();
+		atualizador.atualizar(documentoExistente, doc);
+		
+		usuarioRepositorio.save(usuario);
+		repositorio.save(documentoExistente);
+		return new ResponseEntity<>(documentoExistente,HttpStatus.OK);
 	}
 	
-	// excluir documento
-	@DeleteMapping("/excluir/documento")
-	public ResponseEntity<?> excluirDocumento(@RequestBody Documento exclusao) {
-		HttpStatus status = HttpStatus.BAD_REQUEST;
-		Documento documento = repositorio.getById(exclusao.getId());
-		if (documento != null) {
-			repositorio.delete(documento);
-			status = HttpStatus.OK;
+	@DeleteMapping("/excluir/{id}")
+	public ResponseEntity<Documento> excluirDocumento(@PathVariable Long id) {
+		Documento documento = repositorio.getById(id);
+		List<Usuario> usuarios = usuarioRepositorio.findAll();
+		for(Usuario usuario : usuarios){
+			if(usuario.getDocumentos().contains(documento)){
+				usuario.getDocumentos().remove(documento);
+                usuarioRepositorio.save(usuario);
+			}
 		}
-		return new ResponseEntity<>(status);
+		repositorio.delete(documento);
+		return new ResponseEntity<>(documento, HttpStatus.OK);
 	}
-
 }
