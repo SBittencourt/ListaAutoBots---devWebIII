@@ -19,9 +19,9 @@ Projeto desenvolvido para a aula de desenvolvimento web III da FATEC-SJC, utiliz
 | Lista | Status | Branch |
 |:-----:|:----------:|:---------:|
 | 1 | Finalizada | [Atv I](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvI)  |
-| 2 | Em andamento | [Atv II](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvII) |  
-| 3 | Não iniciada | [Atv III](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvIII) | 
-| 4 | Não iniciada | [Atv IV](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvIV) |
+| 2 | Finalizada | [Atv II](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvII) |  
+| 3 | Finalizada | [Atv III](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvIII) | 
+| 4 | Finalizada | [Atv IV](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvIV) |
 | 5 | Não iniciada | [Atv V](https://github.com/SBittencourt/ListaAutoBots---devWebIII/tree/AtvV) |
 
 
